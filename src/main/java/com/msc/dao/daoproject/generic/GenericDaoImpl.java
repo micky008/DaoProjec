@@ -336,7 +336,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     /**
-     *
+     * Convertie ce qui viens de la BDD en field.
      * @param clazz
      * @param res
      * @return
@@ -419,6 +419,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         return o.toString();
     }
 
+    /**
+     * Convertie un type fild custom [genre une enum] pour la BDD
+     * @param type
+     * @param o
+     * @return 
+     */
     protected abstract String convertLogicCustom(Class<?> type, Object o);
     
     /**
@@ -427,6 +433,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @param t
      * @throws SQLException
      */
+    @Override
     public void insert(T t) throws SQLException {
         StringBuilder into = new StringBuilder();
         StringBuilder values = new StringBuilder();
@@ -468,6 +475,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         st.close();
     }
 
+    @Override
     public void insert(List<T> ts) throws SQLException {
         if (ts == null || ts.isEmpty()) {
             return;
@@ -518,7 +526,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     /**
      * Permet de faire un delete "localisé".
      *
-     * @param where
+     * @param t
      * @throws SQLException
      */
     public void preparedDelete(T t) throws SQLException {
@@ -532,6 +540,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         st.close();
     }
 
+    @Override
     public void close() {
         try {
             if (!st.isClosed()) {
@@ -549,10 +558,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @param t
      * @throws SQLException
      */
+    @Override
     public void update(T t) throws SQLException {
         preparedUpdate(t, null);
     }
 
+    @Override
     public void update(List<T> t) throws SQLException {
         if (t == null || t.isEmpty()) {
             return;
@@ -623,10 +634,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @param t
      * @throws SQLException
      */
+    @Override
     public void delete(T t) throws SQLException {
         preparedDelete(t);
     }
 
+    @Override
     public void deleteObjectById(Integer id) throws SQLException {
         StringBuilder sb = new StringBuilder("DELETE from ");
         sb.append(getTableName());
