@@ -3,8 +3,6 @@ package com.msc.dao.daoproject.generic;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +32,7 @@ public class DAO {
      * <li>bdd.url</li>
      * <li>bdd.login</li>
      * <li>bdd.password</li>
+     * <li>bdd.type</li>
      * </ul>
      */
     public static void initConnection(Properties prop) {
@@ -51,13 +50,8 @@ public class DAO {
                 con = DriverManager.getConnection(jdbcUrl, loginBdd, passwordBdd);
                 con.setAutoCommit(false);
                 bddEmploye = BDD_SUPPORTED.valueOf(prop.getProperty("bdd.type").toUpperCase());
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(DAO.class
-                        .getName()).log(Level.SEVERE, null, ex);
-
-            } catch (SQLException ex) {
-                Logger.getLogger(DAO.class
-                        .getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

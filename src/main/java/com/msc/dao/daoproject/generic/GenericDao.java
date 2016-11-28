@@ -2,7 +2,6 @@ package com.msc.dao.daoproject.generic;
 
 import java.sql.SQLException;
 import java.util.List;
-import javax.ws.rs.core.SecurityContext;
 
 /**
  * Classe que doit etendre les future DAO. Les DAO peuvent uniquement utiliser
@@ -15,9 +14,6 @@ import javax.ws.rs.core.SecurityContext;
  * @param <T> une classe venant du package util.dao.entity
  */
 public interface GenericDao<T> {
-
-
-    public void setSecurityContext(SecurityContext sc) ;
 
 
     public List<T> getAll() throws SQLException;

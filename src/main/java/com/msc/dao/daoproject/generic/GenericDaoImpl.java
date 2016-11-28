@@ -1,16 +1,12 @@
 package com.msc.dao.daoproject.generic;
 
-import com.msc.rest.tokenrestjersey.Token;
-import com.msc.rest.tokenrestjersey.TokenHelper;
+
 import com.msc.dao.daoproject.annotation.ForceNull;
 import com.msc.dao.daoproject.annotation.Id;
 import com.msc.dao.daoproject.annotation.Name;
 import com.msc.dao.daoproject.annotation.StaticField;
 import com.msc.dao.daoproject.generic.bddspecif.InterfaceBddFactory;
-import com.msc.facturierws.entity.MoyenDePaiement;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -25,11 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 
 /**
  * Classe que doit etendre les future DAO. Les DAO peuvent uniquement utiliser
@@ -48,11 +40,10 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      */
     public static boolean DEBUG_MODE = false;
 
-    public Connection con;
-    public Class<?> clazz;
-    public Statement st;
-    public LinkedList<Object> secureList = new LinkedList<>();
-    public SecurityContext sc;
+    protected Connection con;
+    protected Class<?> clazz;
+    protected Statement st;
+    protected LinkedList<Object> secureList = new LinkedList<>();
 
     // histoire de pouvoir faire super(con) lol...
     public GenericDaoImpl(Connection con) {
@@ -72,9 +63,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         this.con = con;
     }
 
-    public void setSecurityContext(SecurityContext sc) {
-        this.sc = sc;
-    }
+
 
     /**
      * Convertie un Field en colonne sql.
@@ -263,16 +252,9 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @throws SQLException
      */
     public T fillObject(ResultSet rs) throws SQLException  {
-        List<T> l = fillObjects(rs);
-       
+        List<T> l = fillObjects(rs);       
         if (l != null && !l.isEmpty()) {
             T t = l.get(0);
-            Method m = MethodUtils.getAccessibleMethod(clazz, "setToken", Token.class);           
-            try {                   
-                m.invoke(t, TokenHelper.newToken(sc));
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                Logger.getLogger(GenericDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
             return t;
         }
         return null;
@@ -294,6 +276,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             fieldNames.add(convertChampToField(rsmd.getColumnName(i)));
         }
         T obj;
+        Object resTmp;
         while (rs.next()) {
             try {
                 obj = (T) clazz.newInstance();
@@ -331,9 +314,9 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                             oj = new Double(bd.doubleValue());
                         }
                     }
-                    if (f.getType() == MoyenDePaiement.class) {
-                        String type = (String) oj;
-                        oj = MoyenDePaiement.valueOf(type);
+                   resTmp = convertFillObjectCustom(f.getType(), oj);
+                   if (resTmp != null ) {                        
+                        oj = resTmp;
                     }
                     f.set(obj, oj);
                 } catch (IllegalArgumentException e) {
@@ -352,6 +335,14 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         return objs;
     }
 
+    /**
+     *
+     * @param clazz
+     * @param res
+     * @return
+     */
+    protected abstract Object convertFillObjectCustom(Class<?> clazz, Object res);
+    
     /**
      * Permet de faire un update localisé.
      *
@@ -393,7 +384,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             e.printStackTrace();
         }
         // TODO Auto-generated catch block
-        return convertLogic(o, type, f);
+        return convertLogic(o, type);
     }
 
     /**
@@ -408,7 +399,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * si o est un Boolean a vrai => '1'<br/>
      * si o est un string to'to => 'to''to'
      */
-    public String convertLogic(Object o, Class<?> type, Field f) {
+    public String convertLogic(Object o, Class<?> type) {
         if (o == null) {
             return "null";
         }
@@ -422,13 +413,14 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         } else if (type == Boolean.class) {
             Boolean b = (Boolean) o;
             return b ? "'1'" : "'0'";
-        } else if (type == MoyenDePaiement.class) {
-            MoyenDePaiement b = (MoyenDePaiement) o;
-            return b.toString();
+        } else if (convertLogicCustom(type, o) != null) {            
+            return convertLogicCustom(type, o) ;
         }
         return o.toString();
     }
 
+    protected abstract String convertLogicCustom(Class<?> type, Object o);
+    
     /**
      * Insert un objet.
      *
