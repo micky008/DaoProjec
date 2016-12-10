@@ -10,13 +10,21 @@ import com.msc.dao.daoproject.generic.GenericInterfaceDao;
  */
 public class InterfaceBddFactory {
 
+    private static MySqlDAO mysqldao;
+    private static SqliteDAO sqlitedao;
 
     public static GenericInterfaceDao getInterface(GenericDao gen) {
         switch (DAO.getBddImpl()) {
             case MYSQL:
-                return new MySqlDAO(gen);
+                if (mysqldao == null) {
+                    mysqldao = new MySqlDAO(gen);
+                }
+                return mysqldao;
             case SQLLITE:
-                return new SqliteDAO(gen);
+                if (sqlitedao == null) {
+                    sqlitedao = new SqliteDAO(gen);
+                }
+                return sqlitedao;
             default:
                 return new SqliteDAO(gen);
         }

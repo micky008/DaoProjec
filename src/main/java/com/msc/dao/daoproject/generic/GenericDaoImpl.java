@@ -659,8 +659,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @return
      */
     public String toDate(java.util.Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return toDate(sdf.format(date));
+         return InterfaceBddFactory.getInterface(this).toDate(date);
     }
 
     public String getColoumnName(Field f) {

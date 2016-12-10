@@ -9,6 +9,8 @@ import com.msc.dao.daoproject.generic.GenericDao;
 import com.msc.dao.daoproject.generic.GenericDaoImpl;
 import com.msc.dao.daoproject.generic.GenericInterfaceDao;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -44,7 +46,13 @@ public class MySqlDAO<T> implements GenericInterfaceDao<T>{
      */
     @Override
     public String toDate(String date) {
-        return " CONVERT('" + date + "', DATE) ";
+        return "CAST('"+date+"' as DATETIME)" ;
+    }
+
+    @Override
+    public String toDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return toDate(sdf.format(date));
     }
 
 }

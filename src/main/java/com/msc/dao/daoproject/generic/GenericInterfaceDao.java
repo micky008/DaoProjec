@@ -25,4 +25,5 @@ public interface GenericInterfaceDao<T> {
      */
     String toDate(String date);
     
+    String toDate(java.util.Date date);
 }
