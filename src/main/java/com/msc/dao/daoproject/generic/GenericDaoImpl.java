@@ -406,6 +406,9 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         if (type == Date.class) {
             Date d = (Date) o;
             return toDate(d);
+        } else if (type == java.util.Date.class) {
+            java.util.Date d = (java.util.Date) o;
+            return toDate(d);
         } else if (type == String.class) {
             String tmp = o.toString();
             return "'" + tmp.replaceAll("\'", "\'\'") + "'";
