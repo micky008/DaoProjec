@@ -337,9 +337,9 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     /**
      * Convertie ce qui viens de la BDD en field.
-     * @param clazz
-     * @param res
-     * @return
+     * @param clazz le type venant de la classe [field]
+     * @param res ce qui vient de la BDD
+     * @return null ce n'est pas un type custom
      */
     protected abstract Object convertFillObjectCustom(Class<?> clazz, Object res);
     
@@ -393,7 +393,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @param o la reponse a convertir<br/>
      * peut etre null.
      * @param type quel type c'est. Boolean.class
-     * @param f le champ pour les annotations.
      * @return exemple: si o est une java.util.date alors ca retourne =>
      * TO_DATE(xx/yy/zzzz,'dd/mm/yyyy')<br/>
      * si o est un Boolean a vrai => '1'<br/>

@@ -13,10 +13,11 @@ import java.sql.SQLException;
 /**
  *
  * @author micky
+ * @param <T>
  */
 public class MySqlDAO<T> implements GenericInterfaceDao<T>{
 
-    private GenericDaoImpl<T> gen;
+    private final GenericDaoImpl<T> gen;
     
     public MySqlDAO(GenericDao<T> genericDAO){
         gen = (GenericDaoImpl<T>) genericDAO;
@@ -29,6 +30,7 @@ public class MySqlDAO<T> implements GenericInterfaceDao<T>{
      * @return
      * @throws SQLException
      */
+    @Override
     public T getLastInsert() throws SQLException {
         String where = "where id = LAST_INSERT_ID()";
         return gen.preparedSelectOnce(where, null);
@@ -38,9 +40,9 @@ public class MySqlDAO<T> implements GenericInterfaceDao<T>{
      * Retourne le SQL pour une date.
      *
      * @param date la date a formatter
-     * @param pattern le pattern de la date
      * @return TO_DATE('xx/yy/zzzz','dd/mm/yyyy');
      */
+    @Override
     public String toDate(String date) {
         return " CONVERT('" + date + "', DATE) ";
     }
