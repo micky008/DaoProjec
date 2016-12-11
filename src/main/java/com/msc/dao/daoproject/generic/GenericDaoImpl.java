@@ -225,6 +225,33 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     }
 
+        /**
+     * Envois directement le SQL. pensez a fermer le resultset ! a eviter tant que possible.
+     * Securisé car il faut remplir la List secureList dans l 'ordre
+     *
+     * @param query select * from truc
+     * @return un resultset.
+     * @throws SQLException
+     */
+    @Deprecated
+    public ResultSet sendSqlSecured(String query) throws SQLException {
+        PreparedStatement ps = con.prepareStatement(query);
+        int i = 0;
+        for (Object key : secureList) {
+            ps.setObject(i++, key);
+        }
+        if (DEBUG_MODE) {
+            String query2 = query;
+            for (Object key : secureList) {
+                query2 = query2.replace("?", key.toString());
+            }
+            System.out.println(query2);
+        }
+        secureList.clear();
+        return ps.executeQuery(query);
+    }
+    
+    
     /**
      * Envois directement le SQL.
      *
