@@ -285,7 +285,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             }
             int i = 1;
             for (String fieldName : fieldNames) {
-                Field f = FieldUtils.getDeclaredField(clazz, fieldName);                
+                Field f = FieldUtils.getDeclaredField(clazz, fieldName, true);                
                 if (f.getAnnotation(ForceNull.class) != null) {
                     continue;
                 }
@@ -687,7 +687,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        Field f = FieldUtils.getDeclaredField(clazz, fieldName);       
+        Field f = FieldUtils.getDeclaredField(clazz, fieldName,true);       
         sb.append(getColoumnName(f));
         sb.append(" in (");
         int pos = 0;
