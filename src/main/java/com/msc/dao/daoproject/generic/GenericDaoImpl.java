@@ -729,6 +729,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         return sb.toString();
     }
 
+    @Override
     public T getObjectById(int id) throws SQLException {
         String sql = "where id = " + id;
         return preparedSelectOnce(sql);
