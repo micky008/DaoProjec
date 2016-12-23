@@ -460,33 +460,21 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         StringBuilder into = new StringBuilder();
         StringBuilder values = new StringBuilder();
         Field fields[] = getFields();
-        int pos = 0;
-        int len = fields.length;
         for (Field field : fields) {
             if (field.getAnnotation(StaticField.class) != null) {
-                len--;
                 continue;
             }
             into.append(getColoumnName(field));
             values.append(convertValue(field, t));
-            if (pos + 1 < len) {
-                into.append(',');
-                values.append(',');
-            }
-            pos++;
+            into.append(',');
+            values.append(',');
         }
-        String resInto = into.toString();
-        if (resInto.endsWith(",")) {
-            resInto = resInto.substring(0, resInto.length() - 1);
-        }
-        String resValues = values.toString();
-        if (resValues.endsWith(",")) {
-            resValues = resValues.substring(0, resValues.length() - 1);
-        }
+        into = into.delete(into.length() - 1, into.length());
+        values = values.delete(values.length() - 1, values.length());
         String query = "insert into " + getTableName() + " (";
-        query += resInto;
+        query += into.toString();
         query += ") VALUES (";
-        query += resValues + ")";
+        query += values.toString() + ")";
 
         st = con.createStatement();
         if (DEBUG_MODE) {
@@ -515,14 +503,11 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                 values.append(convertValue(field, t));
                 values.append(',');
             }
-            String resValues = values.toString();
-            if (resValues.endsWith(",")) {
-                resValues = resValues.substring(0, resValues.length() - 1);
-            }
+            values = values.delete(values.length() - 1, values.length());
             String query = "insert into " + getTableName() + " (";
             query += into;
             query += ") VALUES (";
-            query += resValues + ")";
+            query += values + ")";
             if (DEBUG_MODE) {
                 System.out.println(query);
             }
@@ -593,26 +578,17 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     private String makeUpdate(T obj, String where) {
         StringBuilder sb = new StringBuilder();
         Field fields[] = getFields();
-        int pos = 0;
-        int len = fields.length;
         for (Field field : fields) {
             if (field.getAnnotation(StaticField.class) != null) {
-                len--;
                 continue;
             }
             sb.append(getColoumnName(field));
             sb.append("=");
             sb.append(convertValue(field, obj));
-            if (pos + 1 < len) {
-                sb.append(",");
-            }
-            pos++;
+            sb.append(",");
         }
-        String resSb = sb.toString();
-        if (resSb.endsWith(",")) {
-            resSb = resSb.substring(0, resSb.length() - 1);
-        }
-        return "UPDATE " + getTableName() + " SET " + resSb + " " + (where == null ? " where " + preparedPrimaryKey(obj) : where);
+        sb = sb.delete(sb.length() - 1, sb.length());
+        return "UPDATE " + getTableName() + " SET " + sb.toString() + " " + (where == null ? " where " + preparedPrimaryKey(obj) : where);
     }
 
     public List<Field> getPrimaryKey() {
@@ -698,14 +674,11 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         Field f = FieldUtils.getDeclaredField(clazz, fieldName, true);
         sb.append(getColoumnName(f));
         sb.append(" in (");
-        int pos = 0;
         for (T t : ts) {
             sb.append(convertValue(f, t));
-            if (pos + 1 < ts.size()) {
-                sb.append(",");
-            }
-            pos++;
+            sb.append(",");
         }
+        sb = sb.delete(sb.length() - 1, sb.length());
         sb.append(")");
         return sb.toString();
     }
