@@ -1,6 +1,5 @@
 package com.msc.dao.daoproject.generic;
 
-
 import com.msc.dao.daoproject.annotation.ForceNull;
 import com.msc.dao.daoproject.annotation.Id;
 import com.msc.dao.daoproject.annotation.Name;
@@ -63,8 +62,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         this.con = con;
     }
 
-
-
     /**
      * Convertie un Field en colonne sql.
      *
@@ -116,7 +113,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         return res;
     }
 
-    
     /**
      * Permet de crée un String de type [champ1,champ2,champ3,etc...]
      *
@@ -125,25 +121,16 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      */
     public String convertFiledsToString(String prefix) {
         StringBuilder sb = new StringBuilder();
-        Field fields[] = FieldUtils.getAllFields(clazz);
-        int pos = -1;
-        int len = fields.length;
+        Field fields[] = getFields();
         for (Field field : fields) {
-            pos++;
             if (field.getAnnotation(StaticField.class) != null) {
-                len--;
                 continue;
             }
             sb.append(getColoumnName(field));
-            if (pos + 1 < len) {
-                sb.append(",");
-            }
+            sb.append(",");
         }
-        String resSb = sb.toString();
-        if (resSb.endsWith(",")) {
-            resSb = resSb.substring(0, resSb.length() - 1);
-        }
-        return resSb;
+        sb = sb.delete(sb.length() - 1, sb.length());
+        return sb.toString();
     }
 
     /**
@@ -225,9 +212,10 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     }
 
-        /**
-     * Envois directement le SQL. pensez a fermer le resultset ! a eviter tant que possible.
-     * Securisé car il faut remplir la List secureList dans l 'ordre
+    /**
+     * Envois directement le SQL. pensez a fermer le resultset ! a eviter tant
+     * que possible. Securisé car il faut remplir la List secureList dans l
+     * 'ordre
      *
      * @param query select * from truc
      * @return un resultset.
@@ -250,8 +238,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         secureList.clear();
         return ps.executeQuery(query);
     }
-    
-    
+
     /**
      * Envois directement le SQL.
      *
@@ -278,8 +265,8 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @return un objet sinon NULL.
      * @throws SQLException
      */
-    public T fillObject(ResultSet rs) throws SQLException  {
-        List<T> l = fillObjects(rs);       
+    public T fillObject(ResultSet rs) throws SQLException {
+        List<T> l = fillObjects(rs);
         if (l != null && !l.isEmpty()) {
             T t = l.get(0);
             return t;
@@ -312,7 +299,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             }
             int i = 1;
             for (String fieldName : fieldNames) {
-                Field f = FieldUtils.getDeclaredField(clazz, fieldName, true);                
+                Field f = FieldUtils.getDeclaredField(clazz, fieldName, true);
                 if (f.getAnnotation(ForceNull.class) != null) {
                     continue;
                 }
@@ -341,8 +328,8 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                             oj = new Double(bd.doubleValue());
                         }
                     }
-                   resTmp = convertFillObjectCustom(f.getType(), oj);
-                   if (resTmp != null ) {                        
+                    resTmp = convertFillObjectCustom(f.getType(), oj);
+                    if (resTmp != null) {
                         oj = resTmp;
                     }
                     f.set(obj, oj);
@@ -364,12 +351,13 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     /**
      * Convertie ce qui viens de la BDD en field.
+     *
      * @param clazz le type venant de la classe [field]
      * @param res ce qui vient de la BDD
      * @return null ce n'est pas un type custom
      */
     protected abstract Object convertFillObjectCustom(Class<?> clazz, Object res);
-    
+
     /**
      * Permet de faire un update localisé.
      *
@@ -442,20 +430,25 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         } else if (type == Boolean.class) {
             Boolean b = (Boolean) o;
             return b ? "'1'" : "'0'";
-        } else if (convertLogicCustom(type, o) != null) {            
-            return convertLogicCustom(type, o) ;
+        } else if (convertLogicCustom(type, o) != null) {
+            return convertLogicCustom(type, o);
         }
         return o.toString();
     }
 
     /**
      * Convertie un type fild custom [genre une enum] pour la BDD
+     *
      * @param type
      * @param o
-     * @return 
+     * @return
      */
     protected abstract String convertLogicCustom(Class<?> type, Object o);
-    
+
+    protected Field[] getFields() {
+        return FieldUtils.getAllFields(clazz);
+    }
+
     /**
      * Insert un objet.
      *
@@ -466,7 +459,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     public void insert(T t) throws SQLException {
         StringBuilder into = new StringBuilder();
         StringBuilder values = new StringBuilder();
-        Field fields[] = FieldUtils.getAllFields(clazz);
+        Field fields[] = getFields();
         int pos = 0;
         int len = fields.length;
         for (Field field : fields) {
@@ -509,25 +502,13 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         if (ts == null || ts.isEmpty()) {
             return;
         }
-        StringBuilder into = new StringBuilder();
-        Field fields[] = FieldUtils.getAllFields(clazz);
-        for (Field field : fields) {
-            if (field.getAnnotation(StaticField.class) != null) {
-                continue;
-            }
-            into.append(getColoumnName(field));
-            into.append(',');
-        }
-        String resInto = into.toString();
-        if (resInto.endsWith(",")) {
-            resInto = resInto.substring(0, resInto.length() - 1);
-        }
+        String into = null;
+        into = convertFiledsToString(null);
         st = con.createStatement();
         StringBuilder values = null;
         for (T t : ts) {
             values = new StringBuilder();
-
-            for (Field field : fields) {
+            for (Field field : getFields()) {
                 if (field.getAnnotation(StaticField.class) != null) {
                     continue;
                 }
@@ -539,7 +520,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                 resValues = resValues.substring(0, resValues.length() - 1);
             }
             String query = "insert into " + getTableName() + " (";
-            query += resInto;
+            query += into;
             query += ") VALUES (";
             query += resValues + ")";
             if (DEBUG_MODE) {
@@ -611,7 +592,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     private String makeUpdate(T obj, String where) {
         StringBuilder sb = new StringBuilder();
-        Field fields[] = FieldUtils.getAllFields(clazz);
+        Field fields[] = getFields();
         int pos = 0;
         int len = fields.length;
         for (Field field : fields) {
@@ -689,7 +670,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @return
      */
     public String toDate(java.util.Date date) {
-         return InterfaceBddFactory.getInterface(this).toDate(date);
+        return InterfaceBddFactory.getInterface(this).toDate(date);
     }
 
     public String getColoumnName(Field f) {
@@ -714,7 +695,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        Field f = FieldUtils.getDeclaredField(clazz, fieldName,true);       
+        Field f = FieldUtils.getDeclaredField(clazz, fieldName, true);
         sb.append(getColoumnName(f));
         sb.append(" in (");
         int pos = 0;
