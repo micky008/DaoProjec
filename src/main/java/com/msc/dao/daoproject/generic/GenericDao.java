@@ -15,7 +15,6 @@ import java.util.List;
  */
 public interface GenericDao<T> {
 
-
     public List<T> getAll() throws SQLException;
 
     /**
@@ -24,11 +23,11 @@ public interface GenericDao<T> {
      * @param t
      * @throws SQLException
      */
-    public void insert(T t) throws SQLException ;
+    public void insert(T t) throws SQLException;
 
-    public void insert(List<T> ts) throws SQLException ;
-       
-    public void close() ;
+    public void insert(List<T> ts) throws SQLException;
+
+    public void close();
 
     /**
      * Il faut faire return preparedUpdate();.
@@ -38,7 +37,7 @@ public interface GenericDao<T> {
      */
     public void update(T t) throws SQLException;
 
-    public void update(List<T> t) throws SQLException ;
+    public void update(List<T> t) throws SQLException;
 
     /**
      * Il faut faire return preparedDelete();.
@@ -48,9 +47,8 @@ public interface GenericDao<T> {
      */
     public void delete(T t) throws SQLException;
 
-    public void deleteObjectById(Integer id) throws SQLException ;
+    public void deleteObjectById(Integer id) throws SQLException;
 
-    public T getObjectById(int id) throws SQLException ;
+    public T getObjectById(int id) throws SQLException;
 
-   
 }

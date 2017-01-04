@@ -17,15 +17,14 @@ import java.util.Date;
  * @author micky
  * @param <T>
  */
-public class MySqlDAO<T> implements GenericInterfaceDao<T>{
+public class MySqlDAO<T> implements GenericInterfaceDao<T> {
 
     private final GenericDaoImpl<T> gen;
-    
-    public MySqlDAO(GenericDao<T> genericDAO){
+
+    public MySqlDAO(GenericDao<T> genericDAO) {
         gen = (GenericDaoImpl<T>) genericDAO;
     }
-    
-    
+
     /**
      * Retourne le dernier objet inseré.
      *
@@ -46,7 +45,7 @@ public class MySqlDAO<T> implements GenericInterfaceDao<T>{
      */
     @Override
     public String toDate(String date) {
-        return "CAST('"+date+"' as DATETIME)" ;
+        return "CAST('" + date + "' as DATETIME)";
     }
 
     @Override

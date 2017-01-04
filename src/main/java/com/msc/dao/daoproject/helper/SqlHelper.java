@@ -22,7 +22,7 @@ public class SqlHelper {
             sb.append(',');
         }
         sb.trimToSize();
-        sb = sb.delete(sb.length()-1, sb.length());
+        sb = sb.delete(sb.length() - 1, sb.length());
         sb.append(')');
         return sb.toString();
     }
@@ -30,5 +30,5 @@ public class SqlHelper {
     public static String toIn(Object... liste) {
         return toIn(Arrays.asList(liste));
     }
-    
+
 }

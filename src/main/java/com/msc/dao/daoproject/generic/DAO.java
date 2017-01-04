@@ -78,8 +78,6 @@ public class DAO {
         return GenericDaoImpl.DEBUG_MODE;
     }
 
-
-
     public static BDD_SUPPORTED getBddImpl() {
         return bddEmploye;
     }
