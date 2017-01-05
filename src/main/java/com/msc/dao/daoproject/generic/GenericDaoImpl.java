@@ -322,7 +322,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                     if (f.getType() == Double.class) {
                         if (oj instanceof Integer) {
                             oj = new Double(1.0 * (Integer) oj);
-                        } else {
+                        } else if (oj instanceof BigDecimal){
                             BigDecimal bd = (BigDecimal) oj;
                             oj = new Double(bd.doubleValue());
                         }
@@ -707,7 +707,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         if (DEBUG_MODE) {
             String query2 = query;
             for (Object key : secureList) {
-                query2 = query2.replace("?", key.toString());
+                query2 = query2.replace("?", convertLogic(key, key.getClass()));
             }
             System.out.println(query2);
         }
@@ -720,12 +720,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         PreparedStatement ps = con.prepareStatement(query);
         int i = 1;
         for (Object key : secureList) {
-            ps.setObject(i++, key);
+            ps.setObject(i++, convertLogic(key, key.getClass()));
         }
         if (DEBUG_MODE) {
             String query2 = query;
             for (Object key : secureList) {
-                query2 = query2.replaceFirst("\\?", key.toString());
+                query2 = query2.replaceFirst("\\?", convertLogic(key, key.getClass()));
             }
             System.out.println(query2);
         }
