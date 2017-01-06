@@ -49,6 +49,6 @@ public interface GenericDao<T> {
 
     public void deleteObjectById(Integer id) throws SQLException;
 
-    public T getObjectById(int id) throws SQLException;
+    public T getObjectById(Object... ids) throws SQLException;
 
 }

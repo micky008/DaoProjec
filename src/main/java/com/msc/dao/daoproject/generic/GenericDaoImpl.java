@@ -322,7 +322,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
                     if (f.getType() == Double.class) {
                         if (oj instanceof Integer) {
                             oj = new Double(1.0 * (Integer) oj);
-                        } else if (oj instanceof BigDecimal){
+                        } else if (oj instanceof BigDecimal) {
                             BigDecimal bd = (BigDecimal) oj;
                             oj = new Double(bd.doubleValue());
                         }
@@ -683,8 +683,33 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     @Override
-    public T getObjectById(int id) throws SQLException {
-        String sql = "where id = " + id;
+    /**
+     * Cherche un objet directement par l'id. Attention :<br/>
+     * il faut que le nombre ids soit = au nombre de cle primaires de l'entité.
+     *
+     * @param ids un tableau des clef primaires.
+     * @return
+     * @throws SQLException
+     */
+
+    public T getObjectById(Object... ids) throws SQLException {
+        List<Field> l = getPrimaryKey();
+        if (ids.length != l.size()) {
+            if (DEBUG_MODE) {
+                System.out.println("Attention pour la classe" + clazz.getSimpleName() + " il y a " + l.size() + "primary key" + " pour " + ids.length + " passé en parametres");
+            }
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (Field f : l) {
+            sb.append(getColoumnName(f));
+            sb.append(" = ");
+            sb.append(convertLogic(ids[i++], ids[i++].getClass()));
+            sb.append(" AND ");
+        }
+        sb = sb.delete(sb.length() - 5, sb.length());
+        String sql = "where " + sb.toString();
         return preparedSelectOnce(sql);
     }
 
