@@ -625,11 +625,27 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     @Override
-    public void deleteObjectById(Integer id) throws SQLException {
+    public void delete(List<T> lt) throws SQLException {
+        st = con.createStatement();
+        StringBuilder sb = null;
+        for (T t : lt) {
+            sb = new StringBuilder("DELETE FROM ");
+            sb.append(getTableName());
+            sb.append(" where ");
+            sb.append(preparedPrimaryKey(t));
+            st.addBatch(sb.toString());
+        }
+        st.executeBatch();
+        con.commit();
+        st.close();
+    }
+
+    @Override
+    public void deleteObjectById(Object... ids) throws SQLException {
         StringBuilder sb = new StringBuilder("DELETE from ");
         sb.append(getTableName());
-        sb.append(" where id = ");
-        sb.append(id);
+        sb.append(" where ");
+        sb.append(preparedObjectById(ids));
         sendSqlUpdate(sb.toString());
     }
 
@@ -693,6 +709,11 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      */
 
     public T getObjectById(Object... ids) throws SQLException {
+        String sql = "where " + preparedObjectById(ids);
+        return preparedSelectOnce(sql);
+    }
+
+    protected String preparedObjectById(Object... ids) {
         List<Field> l = getPrimaryKey();
         if (ids.length != l.size()) {
             if (DEBUG_MODE) {
@@ -705,12 +726,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         for (Field f : l) {
             sb.append(getColoumnName(f));
             sb.append(" = ");
-            sb.append(convertLogic(ids[i++], ids[i++].getClass()));
+            sb.append(convertLogic(ids[i], ids[i].getClass()));
             sb.append(" AND ");
+            i++;
         }
         sb = sb.delete(sb.length() - 5, sb.length());
-        String sql = "where " + sb.toString();
-        return preparedSelectOnce(sql);
+        return sb.toString();
     }
 
     /**
