@@ -778,5 +778,10 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         secureList.clear();
         return fillObject(ps.executeQuery());
     }
+    
+        @Override
+    public void truncate() throws SQLException {
+        this.sendSqlUpdate("truncate "+getTableName());
+    }
 
 }
