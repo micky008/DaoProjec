@@ -53,4 +53,6 @@ public interface GenericDao<T> {
 
     public T getObjectById(Object... ids) throws SQLException;
 
+    public void truncate() throws SQLException;
+    
 }
