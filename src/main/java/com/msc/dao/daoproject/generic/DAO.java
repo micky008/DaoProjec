@@ -1,5 +1,7 @@
 package com.msc.dao.daoproject.generic;
 
+import com.msc.dao.daoproject.helper.DAOConfig;
+import com.msc.dao.daoproject.helper.DAOConfig.BDD_SUPPORTED;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,14 +15,10 @@ import java.util.logging.Logger;
  */
 public class DAO {
 
-    public enum BDD_SUPPORTED {
-        MYSQL, SQLLITE;
-    }
-
-       private static BDD_SUPPORTED bddEmploye;
+    private static BDD_SUPPORTED bddEmploye;
 
     private static Connection con;
-    protected static Properties config;
+    protected static DAOConfig config;
 
     private static Properties pIitConnection;
 
@@ -60,16 +58,12 @@ public class DAO {
             prop = new Properties();
         }
         if (con == null || force) {
-            config = prop;
-            try {
-                String jdbcDriver = prop.getProperty("bdd.driver", "org.postgresql.Driver");
-                String jdbcUrl = prop.getProperty("bdd.url");
-                String loginBdd = prop.getProperty("bdd.login");
-                String passwordBdd = prop.getProperty("bdd.password");
-                Class.forName(jdbcDriver);
-                con = DriverManager.getConnection(jdbcUrl, loginBdd, passwordBdd);
+            config = DAOConfig.getConfig(prop);
+            try {               
+                Class.forName(config.getDriver());
+                con = DriverManager.getConnection(config.getUrl(), config.getLogin(), config.getPassword());
                 con.setAutoCommit(false);
-                bddEmploye = BDD_SUPPORTED.valueOf(prop.getProperty("bdd.type").toUpperCase());
+                bddEmploye = config.getType();
                 pIitConnection = prop;
             } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
