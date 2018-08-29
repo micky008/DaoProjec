@@ -1,7 +1,6 @@
 package com.msc.dao.daoproject.generic;
 
-import com.msc.dao.daoproject.helper.SqlHelper.SearchById;
-import java.lang.reflect.Field;
+import com.msc.dao.daoproject.helper.SearchById;
 import java.sql.SQLException;
 import java.util.List;
 

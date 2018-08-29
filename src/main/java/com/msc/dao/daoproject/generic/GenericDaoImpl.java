@@ -5,7 +5,7 @@ import com.msc.dao.daoproject.annotation.Id;
 import com.msc.dao.daoproject.annotation.Name;
 import com.msc.dao.daoproject.annotation.StaticField;
 import com.msc.dao.daoproject.generic.bddspecif.InterfaceBddFactory;
-import com.msc.dao.daoproject.helper.SqlHelper.SearchById;
+import com.msc.dao.daoproject.helper.SearchById;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
