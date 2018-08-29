@@ -708,7 +708,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
      * @return
      * @throws SQLException
      */
-
     public T getObjectById(Object... ids) throws SQLException {
         String sql = "where " + preparedObjectById(ids);
         return preparedSelectOnce(sql);
@@ -733,6 +732,11 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         }
         sb = sb.delete(sb.length() - 5, sb.length());
         return sb.toString();
+    }
+
+    public List<T> getObjectsById(SearchById... ids) throws SQLException {
+        String sql = "where " + preparedObjectById(ids);
+        return preparedSelectMulti(sql);
     }
 
     protected String preparedObjectById(SearchById... ids) {
@@ -790,11 +794,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         }
         secureList.clear();
         return fillObject(ps.executeQuery());
-    }
-    
-        @Override
-    public void truncate() throws SQLException {
-        this.sendSqlUpdate("truncate "+getTableName());
     }
 
     @Override
