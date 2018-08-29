@@ -1,5 +1,7 @@
 package com.msc.dao.daoproject.generic;
 
+import com.msc.dao.daoproject.helper.SqlHelper.SearchById;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -52,7 +54,10 @@ public interface GenericDao<T> {
     public void deleteObjectById(Object... id) throws SQLException;
 
     public T getObjectById(Object... ids) throws SQLException;
+    
+    public List<T> getObjectsById(SearchById... ids) throws SQLException;
 
     public void truncate() throws SQLException;
+    
     
 }

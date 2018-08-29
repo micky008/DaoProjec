@@ -5,6 +5,7 @@ import com.msc.dao.daoproject.annotation.Id;
 import com.msc.dao.daoproject.annotation.Name;
 import com.msc.dao.daoproject.annotation.StaticField;
 import com.msc.dao.daoproject.generic.bddspecif.InterfaceBddFactory;
+import com.msc.dao.daoproject.helper.SqlHelper.SearchById;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
@@ -734,6 +735,18 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         return sb.toString();
     }
 
+    protected String preparedObjectById(SearchById... ids) {
+        StringBuilder sb = new StringBuilder();
+        for (SearchById sbi : ids) {
+            sb.append(getColoumnName(sbi.getF()));
+            sb.append(" = ");
+            sb.append(convertLogic(sbi.getO(), sbi.getO().getClass()));
+            sb.append(" AND ");
+        }
+        sb = sb.delete(sb.length() - 5, sb.length());
+        return sb.toString();
+    }
+
     /**
      * secrured car prepared statement. ne pas oublier de mettre des ? dans le
      * where. puis de remplir la map secureList
@@ -778,11 +791,10 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
         secureList.clear();
         return fillObject(ps.executeQuery());
     }
-    
-        
+
     @Override
     public void truncate() throws SQLException {
-        this.sendSqlUpdate("truncate "+getTableName());
+        this.sendSqlUpdate("truncate " + getTableName());
     }
 
 }
